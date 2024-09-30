@@ -1,0 +1,244 @@
+{%- style -%}
+    .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+        padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+
+    @media screen and (min-width: 750px) {
+        .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+        }
+    }
+{%- endstyle -%}
+<style>
+    .component-heading {
+        font-size: 60px;
+        font-weight: 600;
+        display: inline-block;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-image: linear-gradient(270deg, var(--token-a83cc714-a7b3-4592-8045-1428c2e6a6b0, rgb(242, 240, 245)) 36.059512281010655%, var(--token-513a6f61-0bfc-4695-a0d7-a3408c26412f, rgb(140, 65, 245)) 38%, rgba(208, 178, 251, 1) 84%, var(--token-a83cc714-a7b3-4592-8045-1428c2e6a6b0, rgb(242, 240, 245)) 86%);
+        text-align: center;
+        width: 100%;
+    }
+    .component-subheading {
+        text-align: center;
+        color: rgb(165, 144, 193);
+    }
+    .content-block .content-inner {
+        display: flex;
+        flex-direction: row;
+        width: 64%;
+        align-items: center;
+        position: relative;
+    }
+    .block-content.content-right .layer-description {
+        margin-left: auto;
+    }
+    .layer-description {
+        max-width: 320px;
+    }
+    .content-block .image-wrapper {
+        -webkit-filter: drop-shadow(0px 32px 22px rgba(0,0,0,.52));
+        filter: drop-shadow(0px 32px 22px rgba(0,0,0,.52));
+    }
+    .content-block .image-wrapper img {
+        max-width: 350px;
+        width: 100%;
+        object-position: center;
+        object-fit: cover;
+        height: 100%;
+        display: block;
+    }
+    .content-block .block-content .line {
+        display: flex;
+        flex: none;
+        height: 2px;
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+    }
+    @media (min-width: 1025px) {
+        .right-text.content-block .content-inner {
+            flex-direction: row-reverse;
+            margin-left: auto; 
+        }
+        .block-content {
+            position: relative;
+            top: 70px;
+            width: 430px;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-block {
+            margin-bottom: 20px;
+        }
+    }
+    @media (max-width: 1024px) { 
+        .content-block .block-content .line {
+            display: none;
+        }
+        .content-block .content-inner {
+            flex-direction: column;
+            gap: 0;
+            width: 100%;
+        }
+        .content-block .image-wrapper {
+            order: -1;
+        }
+        .content-block:not(:last-child) {
+            margin-bottom: 25px;
+        }
+    }
+</style>
+
+<section class="section-components color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+    <div class="container page-width">
+        <h2 class="component-heading">{{ section.settings.heading }}</h2>
+        <p class="component-subheading">{{ section.settings.sub_heading }}</p>
+        <div class="component-layers">
+            {% for block in section.blocks %}
+            {% if block.type == 'text_left' %}
+                <div class="text-left content-block">
+                    <div class="content-inner">
+                        <div class="block-content content-left">
+                            <div class="line" style="background: {{ block.settings.line_color }}"></div> 
+                            <div class="layer-description">
+                                <h3>{{ block.settings.title }}</h3>
+                                <p>{{ block.settings.cotnent }}</p>
+                            </div>
+                        </div>
+                        <div class="image-wrapper">
+                            <img src="{{ block.settings.component_image | image_url }}" alt="Component Image" height="auto" width="100%" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if block.type == 'right_text' %}
+                <div class="right-text content-block">
+                    <div class="content-inner">
+                        <div class="block-content content-right">
+                            <div class="line" style="background: {{ block.settings.line_color }}"></div>
+                            <div class="layer-description">
+                                <h3>{{ block.settings.title }}</h3>
+                                <p>{{ block.settings.content }}</p>
+                            </div>
+                        </div>
+                        <div class="image-wrapper">
+                            <img src="{{ block.settings.component_image | image_url }}" alt="Component Image" height="auto" width="100%" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+{% schema %}
+{
+    "name": "Component layers",
+    "tag": "section",
+    "class": "section-components",
+    "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+        "type": "text",
+        "label": "Heading",
+        "id": "heading"
+    },
+    {
+        "type": "text",
+        "label": "Sub Heading",
+        "id": "sub_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+    ],
+    "blocks": [
+    {
+        "type": "text_left",
+        "name": "Text Left",
+        "settings": [
+        {
+            "type": "text",
+            "label": "Title",
+            "id": "title"
+        },
+        {
+            "type": "textarea",
+            "label": "Cotnent",
+            "id": "cotnent"
+        },
+        {
+            "type": "image_picker",
+            "label": "Component Image",
+            "id": "component_image"
+        },
+        {
+            "type": "color",
+            "label": "Line Color",
+            "id": "line_color"
+        }
+        ]
+    },
+    {
+        "type": "right_text",
+        "name": "Right Text",
+        "settings": [
+        {
+            "type": "text",
+            "label": "Title",
+            "id": "title"
+        },
+        {
+            "type": "textarea",
+            "label": "Content",
+            "id": "content"
+        },
+        {
+            "type": "image_picker",
+            "label": "Component Image",
+            "id": "component_image"
+        },
+        {
+            "type": "color",
+            "label": "Line Color",
+            "id": "line_color"
+        }
+        ]
+    }
+    ],
+    "presets": [
+    {
+        "name": "Component layers"
+    }
+    ]
+}
+{% endschema %}

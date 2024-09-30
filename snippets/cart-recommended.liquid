@@ -1,0 +1,19 @@
+<div class="upcart-addon">
+    <div class="addon-products">  
+        {%- for item in cart.items -%}
+            {% assign addon_products = item.product.metafields.custom.addon_products.value %}
+            {% for product in addon_products %}
+                {% render 'card-product-cart',
+                    card_product: product,
+                    media_aspect_ratio: section.settings.image_ratio,
+                    show_vendor: section.settings.show_vendor,
+                    show_rating: section.settings.show_rating,
+                    lazy_load: lazy_load,
+                    quick_add: section.settings.quick_add,
+                    section_id: section.id,
+                    section: section
+                  %}
+            {% endfor %}
+        {% endfor %}
+    </div> 
+</div>

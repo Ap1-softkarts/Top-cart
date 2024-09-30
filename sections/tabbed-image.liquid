@@ -1,0 +1,219 @@
+{%- style -%}
+    .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+        padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+
+    @media screen and (min-width: 750px) {
+        .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+        }
+    }
+{%- endstyle -%}
+<style>
+    .tabs--inner {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .tabs--inner .tab-one-half {
+        max-width: calc(50% -10px);
+        width: 100%;
+    }
+    .tab-content .tab-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .tabs--inner .content-wrapper {
+        max-width: 500px;
+    }
+    .tab__content, .tab__content.hide {
+        display: none;
+    }
+    .tab__content.show {
+        display: flex;
+    }
+    .tab__content p {
+        margin: 5px 0 0;
+
+    }
+    .tab-content .tab--title {
+        margin: 0;
+    }
+    .tab-list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 10px;
+    }
+    .tab-list .tab-item {
+        border: 2px solid #aa83fd;
+        border-radius: 7px;
+        padding: 10px 15px;
+    }
+    .media-item:not(:first-child) {
+        display: none;
+    }
+</style>
+
+<section class="section-tabs color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+    <div class="container page-width">
+        <div class="collapsible-tab tab-targets">
+            <div class="tabs--inner">
+                <div class="tab-content tab-left tab-one-half">
+                    <div class="content-wrapper">
+                        <h2 class="section-heading">{{ section.settings.heading }}</h2>
+                        <p class="section-subheading">{{ section.settings.sub_heading }}</p>
+                        <div class="tab-list">
+                            {% for block in section.blocks %}
+                                <div class="tab-item media-tab{{ forloop.index }}" data-index="{{ forloop.index }}">
+                                    <div class="tab-inner--content">
+                                        {% if block.settings.tab_title != blank %}
+                                            <div class="tab-header">
+                                                <h2 class="tab--title">{{ block.settings.tab_title }}</h2>
+                                                {% render 'icon-chevron-right' %}
+                                            </div>
+                                        {% endif %}
+                                        {% if block.settings.tab_content != blank %}
+                                            <div class="tab__content">
+                                                <p>{{ block.settings.tab_content }}</p>
+                                            </div> 
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-media tab-right tab-one-half">
+                    <div class="tab-media-inner media-list">
+                        {% for block in section.blocks %}
+                            {% if block.settings.tab_image != blank %}
+                                <div class="media-item" id="media-tab{{ forloop.index }}" data-index="{{ forloop.index }}">
+                                    <img src="{{ block.settings.tab_image | image_url }}" alt="{{ block.settings.tab_image.alt }}" height="auto" width="100%" loading="lazy">
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+const accordion = document.querySelector('.tab-content .tab-list');
+const headings = accordion.querySelectorAll('.tab-header');
+const contents = accordion.querySelectorAll('.tab__content');
+const mediaItems = document.querySelectorAll('.media-item');
+
+headings.forEach((heading) => {
+  heading.addEventListener('click', () => {
+    const content = heading.nextElementSibling;
+
+    if (content.classList.contains('show')) {
+      content.classList.remove('show');
+      content.classList.add('hide');
+    } else {
+      content.classList.remove('hide');
+      content.classList.add('show');
+      contents.forEach((otherContent) => {
+        if (otherContent !== content) {
+          otherContent.classList.remove('show');
+          otherContent.classList.add('hide');
+        }
+      });
+
+    const activeTabIndex = Array.prototype.indexOf.call(headings, heading);
+    const activeMediaItem = mediaItems[activeTabIndex];
+    mediaItems.forEach((mediaItem) => {
+        mediaItem.style.display = 'none';
+    });
+    activeMediaItem.style.display = 'block';
+    }
+    content.classList.add('animate');
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  contents[0].classList.add('show');
+  mediaItems[0].style.display = 'block';
+});
+</script>
+
+
+{% schema %}
+{
+    "name": "Tabbed Image",
+    "tag": "section",
+    "class": "section-tabs",
+    "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+        "type": "richtext",
+        "label": "Heading",
+        "id": "heading"
+    },
+    {
+        "type": "inline_richtext",
+        "label": "Sub Heading",
+        "id": "sub_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+    ],
+    "blocks": [
+    {
+        "type": "left_tab",
+        "name": "Collapsible Tabs",
+        "settings": [
+        {
+            "type": "text",
+            "id": "tab_title",
+            "label": "Title"
+        },
+        {
+            "type": "textarea",
+            "id": "tab_content",
+            "label": "Cotnent"
+        },
+        {
+            "type": "image_picker",
+            "id": "tab_image",
+            "label": "Tab Image"
+        }
+        ]
+    }
+    ],
+    "presets": [
+    {
+        "name": "Tabbed Image"
+    }
+    ]
+}
+{% endschema %}
